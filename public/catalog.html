@@ -103,7 +103,10 @@ main{max-width:1280px;margin:0 auto;padding:26px 20px 90px}
 .dr-head{background:var(--pine);color:var(--cream);padding:16px 20px;display:flex;align-items:center;gap:10px}
 .dr-title{font-family:var(--disp);font-size:21px;font-weight:700;flex:1}
 .dr-sub{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--brass);display:block}
+.dr-head>div:first-child{flex:1;min-width:0}
 .dr-close{background:none;border:none;color:var(--cream);font-size:26px;line-height:1;padding:4px 8px}
+.dr-collapse{display:none;background:rgba(251,249,244,.12);border:1px solid rgba(251,249,244,.3);color:var(--cream);border-radius:7px;width:34px;height:34px;align-items:center;justify-content:center;font-size:25px;line-height:1;padding:0;flex:0 0 auto}
+.dr-collapse:hover{background:rgba(251,249,244,.22)}
 .dr-expand{background:rgba(251,249,244,.12);border:1px solid rgba(251,249,244,.3);color:var(--cream);border-radius:7px;padding:6px 11px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px}
 .dr-expand:hover{background:rgba(251,249,244,.22)}
 .drawer.wide{width:min(1020px,100%)}
@@ -182,27 +185,29 @@ footer b{color:var(--cream)}
 }
 /* ---------- Heritage Ledger desktop workspace ---------- */
 @media (min-width:1280px){
-  :root{--rail:236px;--pad:372px}
+  :root{--rail:270px;--pad:372px;--pad-live:var(--pad)}
+  body.order-collapsed{--pad-live:56px}
   body{
     min-height:100vh;
     background:
       linear-gradient(90deg,rgba(176,141,87,.035) 1px,transparent 1px) 0 0/32px 32px,
       var(--cream)
   }
-  header{padding-right:var(--pad);box-shadow:0 1px 0 rgba(251,249,244,.12)}
+  header{padding-right:var(--pad-live);box-shadow:0 1px 0 rgba(251,249,244,.12);transition:padding-right .18s ease}
   .hd-inner{max-width:none;padding:12px 24px;gap:22px}
   .hd-logo svg{height:54px}
   .hd-search{max-width:720px}
   .hd-search input{height:42px;border-radius:2px;background:rgba(251,249,244,.08)}
   .cart-btn{display:none}
-  .ridge{width:calc(100% - var(--pad));height:12px}
+  .ridge{width:calc(100% - var(--pad-live));height:12px;transition:width .18s ease}
 
   .toolbar{
     position:fixed;
     inset:78px auto 0 0;
     width:var(--rail);
     z-index:35;
-    overflow:auto;
+    overflow-x:hidden;
+    overflow-y:auto;
     border-right:1px solid var(--line);
     border-bottom:0;
     background:#F5F0E5
@@ -218,7 +223,7 @@ footer b{color:var(--cream)}
     font-weight:700;
     letter-spacing:.08em
   }
-  .tb-inner{padding:0;display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .tb-inner{width:100%;min-width:0;padding:0;display:flex;flex-direction:column;align-items:stretch;gap:0}
   .brand-sel{
     order:-1;
     width:auto;
@@ -227,7 +232,7 @@ footer b{color:var(--cream)}
     border-radius:2px;
     background:var(--white)
   }
-  .cats{display:flex;flex-direction:column;gap:0;overflow:visible;padding:0}
+  .cats{display:flex;flex-direction:column;gap:0;overflow:visible;padding:0;width:100%;min-width:0}
   .cat-chip{
     display:flex;
     align-items:center;
@@ -240,16 +245,21 @@ footer b{color:var(--cream)}
     border-radius:0;
     padding:10px 14px;
     background:transparent;
-    text-align:left
+    text-align:left;
+    gap:12px;
+    overflow:hidden
   }
+  .cat-chip .cat-label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .cat-chip .ct{flex:0 0 auto;margin-left:auto;padding-left:4px;font-variant-numeric:tabular-nums}
   .cat-chip:hover{border-color:var(--line);border-left-color:var(--brass);background:var(--white)}
   .cat-chip.on{border-left-color:var(--brass);background:var(--pine);color:var(--cream)}
   .cat-chip.on .ct{color:#D9B778}
 
   main{
     max-width:none;
-    margin:0 var(--pad) 0 var(--rail);
-    padding:34px 28px 100px
+    margin:0 var(--pad-live) 0 var(--rail);
+    padding:34px 28px 100px;
+    transition:margin-right .18s ease
   }
   .cat-title{font-size:42px;line-height:1.05;letter-spacing:-.02em;margin:0 0 5px}
   .cat-sub{margin-bottom:28px;text-transform:uppercase;letter-spacing:.08em;font-size:11.5px}
@@ -267,20 +277,28 @@ footer b{color:var(--cream)}
 
   .scrim{display:none!important}
   .drawer,.drawer.wide{
-    width:var(--pad);
+    width:var(--pad-live);
     transform:none;
     box-shadow:-8px 0 28px rgba(32,41,31,.12);
-    border-left:1px solid rgba(251,249,244,.2)
+    border-left:1px solid rgba(251,249,244,.2);
+    transition:width .18s ease,transform .22s ease
   }
   .dr-head{min-height:78px;padding:14px 18px}
   .dr-title{font-size:25px}
+  .dr-collapse{display:flex}
   .dr-expand,.dr-close{display:none}
   .dr-body{padding:14px 18px}
   .dr-actions{padding:14px 18px}
   .drawer.wide .pad-line{display:flex;padding:10px 0}
   .drawer.wide .pl-info,.drawer.wide .pl-right{display:flex;flex-direction:column}
   .drawer.wide .pl-right{align-items:flex-end}
-  footer{margin-left:var(--rail);margin-right:var(--pad)}
+  footer{margin-left:var(--rail);margin-right:var(--pad-live);transition:margin-right .18s ease}
+  body.order-collapsed .drawer{box-shadow:-2px 0 10px rgba(32,41,31,.12)}
+  body.order-collapsed .dr-head{height:100%;min-height:100%;padding:18px 0;align-items:center;justify-content:flex-start;flex-direction:column}
+  body.order-collapsed .dr-head>div:first-child,
+  body.order-collapsed .dr-body,
+  body.order-collapsed .dr-actions{display:none}
+  body.order-collapsed .dr-collapse{margin:0 auto}
 }
 </style>
 </head>
@@ -325,6 +343,7 @@ footer b{color:var(--cream)}
       <span class="dr-sub">The Valley Wholesale</span>
       <div class="dr-title">Order pad</div>
     </div>
+    <button class="dr-collapse" id="drCollapse" type="button" aria-controls="drawer" aria-expanded="true" aria-label="Collapse order pad" title="Collapse order pad"><span aria-hidden="true">›</span></button>
     <button class="dr-expand" id="drExpand" aria-pressed="false">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/></svg>
       <span>Expand</span>
@@ -451,7 +470,7 @@ function renderChips(){
   const el = $("#catChips");
   el.innerHTML = DATA.map((c, i) => {
     const n = c.b.reduce((a, b) => a + b.g.reduce((x, g) => x + g.v.length, 0), 0);
-    return `<button class="cat-chip${i === activeCat && !searchQ ? " on" : ""}" data-ci="${i}" role="tab" aria-selected="${i === activeCat && !searchQ}">${esc(c.l)}<span class="ct">${n}</span></button>`;
+    return `<button class="cat-chip${i === activeCat && !searchQ ? " on" : ""}" data-ci="${i}" role="tab" aria-selected="${i === activeCat && !searchQ}"><span class="cat-label">${esc(c.l)}</span><span class="ct">${n}</span></button>`;
   }).join("");
 }
 $("#catChips").addEventListener("click", e => {
@@ -625,10 +644,21 @@ $("#search").addEventListener("input", e => {
 
 // ---------- drawer / order pad ----------
 const drawer = $("#drawer"), scrim = $("#scrim");
+const collapseBtn = $("#drCollapse");
+let desktopOrderCollapsed = false;
+function setOrderPadCollapsed(collapsed){
+  desktopOrderCollapsed = collapsed;
+  document.body.classList.toggle("order-collapsed", collapsed);
+  collapseBtn.setAttribute("aria-expanded", String(!collapsed));
+  collapseBtn.setAttribute("aria-label", collapsed ? "Expand order pad" : "Collapse order pad");
+  collapseBtn.title = collapsed ? "Expand order pad" : "Collapse order pad";
+  collapseBtn.querySelector("span").textContent = collapsed ? "‹" : "›";
+}
 function openDrawer(){ renderPad(); drawer.classList.add("show"); scrim.classList.add("show"); document.body.style.overflow = "hidden"; }
 function closeDrawer(){ drawer.classList.remove("show"); scrim.classList.remove("show"); document.body.style.overflow = ""; }
 $("#cartBtn").addEventListener("click", openDrawer);
 $("#drClose").addEventListener("click", closeDrawer);
+collapseBtn.addEventListener("click", () => setOrderPadCollapsed(!desktopOrderCollapsed));
 scrim.addEventListener("click", closeDrawer);
 document.addEventListener("keydown", e => { if (e.key !== "Escape") return; const cc = $("#ccWrap"), cw = $("#confirmWrap"); if (cc.classList.contains("show")) cc.classList.remove("show"); else if (cw.classList.contains("show")) cw.classList.remove("show"); else closeDrawer(); });
 
@@ -943,7 +973,12 @@ function syncOrderPadSemantics(){
   drawer.setAttribute("role", permanent ? "complementary" : "dialog");
   if (permanent) drawer.removeAttribute("aria-modal");
   else drawer.setAttribute("aria-modal", "true");
-  if (permanent) renderPad();
+  if (permanent){
+    setOrderPadCollapsed(desktopOrderCollapsed);
+    renderPad();
+  } else {
+    document.body.classList.remove("order-collapsed");
+  }
 }
 permanentOrderPad.addEventListener("change", syncOrderPadSemantics);
 syncOrderPadSemantics();
