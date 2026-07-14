@@ -641,7 +641,7 @@ function cartUnits(){ return Object.values(cart).reduce((a, b) => a + b, 0); }
 
 function updateCartUI(){
   $("#cartCount").textContent = cartUnits();
-  if (drawer.classList.contains("show")) renderPad();
+  if (drawer.classList.contains("show") || window.matchMedia("(min-width: 1280px)").matches) renderPad();
 }
 
 function renderPad(){
@@ -943,6 +943,7 @@ function syncOrderPadSemantics(){
   drawer.setAttribute("role", permanent ? "complementary" : "dialog");
   if (permanent) drawer.removeAttribute("aria-modal");
   else drawer.setAttribute("aria-modal", "true");
+  if (permanent) renderPad();
 }
 permanentOrderPad.addEventListener("change", syncOrderPadSemantics);
 syncOrderPadSemantics();
