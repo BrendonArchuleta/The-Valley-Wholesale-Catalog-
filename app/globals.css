@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #20291f;
+  background: #fbf9f4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.catalog-fallback {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.catalog-fallback a {
+  color: #2c4f40;
+  font-weight: 700;
+}
