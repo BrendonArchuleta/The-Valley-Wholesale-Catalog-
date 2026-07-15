@@ -49,6 +49,8 @@ header{background:var(--pine);color:var(--cream);position:sticky;top:0;z-index:4
 .cart-btn{flex:0 0 auto;display:flex;align-items:center;gap:9px;background:var(--brass);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:700;font-size:15px;transition:background .15s}
 .cart-btn:hover{background:var(--brass-dark)}
 .cart-count{background:var(--cream);color:var(--pine);border-radius:99px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;padding:0 6px}
+.contact-btn{flex:0 0 auto;display:flex;align-items:center;gap:9px;background:transparent;color:var(--cream);border:1px solid rgba(251,249,244,.35);border-radius:8px;padding:10px 16px;font-weight:700;font-size:15px;transition:background .15s,border-color .15s}
+.contact-btn:hover{background:rgba(251,249,244,.1);border-color:rgba(251,249,244,.55)}
 .ridge{display:block;width:100%;height:14px;color:var(--pine)}
 
 /* ---------- toolbar ---------- */
@@ -165,6 +167,13 @@ main{max-width:1280px;margin:0 auto;padding:26px 20px 90px}
 .confirm-btns{display:grid;gap:8px}
 .cc-check{display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:500;color:var(--ink);margin:-6px 0 16px;line-height:1.4;cursor:pointer}
 .cc-check input{margin-top:2px;accent-color:var(--pine)}
+.contact-card{padding:2px 0 4px}
+.contact-name{font-family:var(--disp);font-size:20px;font-weight:600;color:var(--ink);margin:0 0 12px}
+.contact-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:500;font-size:14.5px}
+.contact-row:first-of-type{border-top:none}
+.contact-row svg{flex:0 0 auto;color:var(--brass)}
+.contact-row:hover{color:var(--pine)}
+.contact-label{color:var(--muted);font-weight:600;min-width:52px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,80px);background:var(--pine);color:var(--cream);padding:11px 20px;border-radius:9px;font-weight:600;box-shadow:var(--shadow);transition:transform .25s;z-index:80;max-width:90%}
 .toast.show{transform:translate(-50%,0)}
 
@@ -178,6 +187,7 @@ footer b{color:var(--cream)}
   .hd-inner{flex-wrap:wrap}
   .toolbar{top:118px}
   .cart-btn span.txt{display:none}
+  .contact-btn span.txt{display:none}
   .v-price{display:none}
   .vrow{gap:8px;padding:8px 12px}
   .v-line{width:64px}
@@ -311,6 +321,10 @@ footer b{color:var(--cream)}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
       <input id="search" type="search" placeholder="Search 3,055 products — brand, flavor, strength…" autocomplete="off" aria-label="Search products">
     </div>
+    <button class="contact-btn" id="contactBtn" aria-label="Contact your rep">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+      <span class="txt">Contact</span>
+    </button>
     <button class="cart-btn" id="cartBtn" aria-label="Open order">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16l-1.5 12a2 2 0 0 1-2 1.8h-9A2 2 0 0 1 5.5 19L4 7Z"/><path d="M8.5 10V6a3.5 3.5 0 0 1 7 0v4"/></svg>
       <span class="txt">Your order</span>
@@ -407,6 +421,28 @@ footer b{color:var(--cream)}
       <button class="btn btn-ghost" id="sendCancel">Cancel</button>
     </div>
     <p class="hint" style="margin-top:10px">If your email app doesn't open, use Gmail — it works on any device.</p>
+  </div>
+</div>
+<div class="confirm-wrap" id="contactWrap" role="dialog" aria-modal="true" aria-label="Contact your rep">
+  <div class="confirm-box">
+    <div class="contact-card">
+      <p class="contact-name">Brock Lierd</p>
+      <a class="contact-row" href="mailto:brock@thevalleywholesale.com">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        brock@thevalleywholesale.com
+      </a>
+      <a class="contact-row" href="tel:+18016441132">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        <span class="contact-label">Cell</span> 801-644-1132
+      </a>
+      <a class="contact-row" href="tel:+14805425173">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        <span class="contact-label">Office</span> (480) 542-5173
+      </a>
+    </div>
+    <div class="confirm-btns" style="margin-top:16px">
+      <button class="btn btn-ghost" id="contactClose">Close</button>
+    </div>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -658,9 +694,12 @@ function openDrawer(){ renderPad(); drawer.classList.add("show"); scrim.classLis
 function closeDrawer(){ drawer.classList.remove("show"); scrim.classList.remove("show"); document.body.style.overflow = ""; }
 $("#cartBtn").addEventListener("click", openDrawer);
 $("#drClose").addEventListener("click", closeDrawer);
+$("#contactBtn").addEventListener("click", () => $("#contactWrap").classList.add("show"));
+$("#contactClose").addEventListener("click", () => $("#contactWrap").classList.remove("show"));
+$("#contactWrap").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove("show"); });
 collapseBtn.addEventListener("click", () => setOrderPadCollapsed(!desktopOrderCollapsed));
 scrim.addEventListener("click", closeDrawer);
-document.addEventListener("keydown", e => { if (e.key !== "Escape") return; const cc = $("#ccWrap"), cw = $("#confirmWrap"); if (cc.classList.contains("show")) cc.classList.remove("show"); else if (cw.classList.contains("show")) cw.classList.remove("show"); else closeDrawer(); });
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; const cc = $("#ccWrap"), cw = $("#confirmWrap"), ct = $("#contactWrap"); if (cc.classList.contains("show")) cc.classList.remove("show"); else if (cw.classList.contains("show")) cw.classList.remove("show"); else if (ct.classList.contains("show")) ct.classList.remove("show"); else closeDrawer(); });
 
 function cartLines(){
   return Object.entries(cart).map(([id, qty]) => ({ ...BY_ID[id], qty, line: qty * BY_ID[id].price }))
