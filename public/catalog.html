@@ -72,6 +72,9 @@ main{max-width:1280px;margin:0 auto;padding:26px 20px 90px}
 .brand-head{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--pine);padding-bottom:7px;margin-bottom:12px}
 .brand-name{font-family:var(--disp);font-size:21px;font-weight:600;color:var(--pine)}
 .brand-meta{color:var(--muted);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
+.badge-top-brand{background:var(--pine);color:var(--cream);font-size:11px;font-weight:700;letter-spacing:.03em;border-radius:99px;padding:3px 9px;white-space:nowrap}
+.g-star{color:var(--brass);font-size:13px;flex:0 0 auto}
+.badge-bestseller{display:inline-block;margin-left:8px;background:var(--brass);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border-radius:99px;padding:2px 7px;vertical-align:middle;white-space:nowrap}
 .group{background:var(--white);border:1px solid var(--line);border-radius:10px;margin-bottom:9px;overflow:hidden}
 .group-head{width:100%;display:flex;align-items:center;gap:14px;padding:13px 16px;background:none;border:none;text-align:left;font-size:15px}
 .group-head:hover{background:var(--sand)}
@@ -539,6 +542,21 @@ DATA.forEach((c, ci) => c.b.forEach((b, bi) => b.g.forEach((g, gi) => {
 })));
 const BY_ID = Object.fromEntries(ITEMS.map(it => [it.id, it]));
 
+// ---------- top brands / top items (from sales rank export) ----------
+const TOP_ITEM_IDS = new Set(["0.0.0.0","0.0.0.1","0.0.0.2","0.0.0.3","0.0.1.0","0.0.1.3","0.0.2.0","0.0.2.1","0.0.2.2","0.0.2.3","1.0.1.0","1.0.1.1","1.0.1.2","1.0.1.5","1.0.2.0","1.0.2.1","1.0.2.2","1.0.2.5","1.3.1.8","1.3.1.9","10.0.0.0","10.0.0.4","10.0.1.0","10.0.1.2","10.0.1.3","10.0.1.4","10.0.1.5","10.0.1.6","10.0.1.7","10.0.1.8","11.0.0.0","11.0.0.1","11.0.0.2","11.0.0.3","11.0.0.4","11.0.0.5","11.0.0.6","11.0.0.7","11.0.0.8","11.0.0.9","12.0.0.0","12.0.0.2","12.0.0.4","12.0.0.5","12.0.1.0","12.0.1.1","12.0.1.2","12.0.1.3","12.0.1.4","12.0.1.5","2.0.0.0","2.1.0.0","2.1.2.0","3.1.0.0","3.1.1.1","3.1.1.2","4.3.0.0","5.1.2.0","5.1.2.1","5.1.2.2","5.1.2.4","5.5.1.0","5.5.1.1","5.5.1.2","5.5.1.3","5.5.1.4","5.5.2.4","6.11.1.0","6.11.1.12","6.11.1.16","6.11.1.25","6.11.1.3","6.11.1.31","6.11.2.0","6.11.2.16","6.11.2.25","6.11.2.3","7.2.0.0","7.2.0.1","7.2.0.2","7.2.0.3","7.2.0.4","7.2.0.5","7.2.0.6","7.2.0.7","7.2.3.0","7.3.0.0","8.5.0.0","8.5.0.11","8.5.0.13","8.5.0.15","8.5.0.16","8.5.0.2","8.5.0.3","8.5.0.5","8.5.0.6","8.5.0.7","9.0.0.0","9.0.0.1","9.0.1.2","9.0.2.0","9.0.3.0","9.0.5.1","9.0.5.2","9.4.2.0","9.4.2.1","9.4.2.2"]);
+const TOP_BRAND_RANK = {}; // "ci.bi" -> rank
+[[5,5,1],[5,1,2],[6,11,1],[6,4,2],[6,12,3],[0,0,1],[0,4,2],[7,2,1],[7,3,2],[8,5,1],[8,3,2],[8,2,3],[1,3,1],[1,0,2]].forEach(([ci, bi, rank]) => { TOP_BRAND_RANK[`${ci}.${bi}`] = rank; });
+function groupHasTopItem(ci, bi, gi){
+  return DATA[ci].b[bi].g[gi].v.some((v, vi) => TOP_ITEM_IDS.has(`${ci}.${bi}.${gi}.${vi}`));
+}
+function topBrandBadgeHTML(ci, bi){
+  const rank = TOP_BRAND_RANK[`${ci}.${bi}`];
+  return rank ? `<span class="badge-top-brand">★ Top Brand #${rank}</span>` : "";
+}
+function bestsellerStarHTML(hasTop){
+  return hasTop ? `<span class="g-star" title="Includes a top-selling item">★</span>` : "";
+}
+
 // ---------- state ----------
 let cart = {};            // id -> qty
 let activeCat = 0;        // index into DATA, or -1 for search mode
@@ -586,6 +604,7 @@ function groupHTML(c, ci, b, bi, g, gi, forceOpen){
   const inCart = g.v.reduce((a, v, vi) => a + (cart[`${ci}.${bi}.${gi}.${vi}`] || 0), 0);
   return `<div class="group${forceOpen ? " open" : ""}" data-key="${ci}.${bi}.${gi}">
     <button class="group-head" aria-expanded="${!!forceOpen}">
+      ${bestsellerStarHTML(groupHasTopItem(ci, bi, gi))}
       <span class="g-name">${esc(g.n)}</span>
       ${inCart ? `<span class="g-incart">${inCart} in order</span>` : ""}
       <span class="g-vcount">${g.v.length === 1 ? "1 option" : g.v.length + " options"}</span>
@@ -602,7 +621,7 @@ function variantsHTML(ci, bi, gi, matchIds){
     if (matchIds && !matchIds.has(id)) return "";
     const q = cart[id] || 0;
     return `<div class="vrow" data-id="${id}">
-      <span class="v-name">${esc(v[0] || "Standard")}</span>
+      <span class="v-name">${esc(v[0] || "Standard")}${TOP_ITEM_IDS.has(id) ? `<span class="badge-bestseller">Bestseller</span>` : ""}</span>
       <span class="v-price">${fmt(v[1])}</span>
       <span class="stepper">
         <button data-d="-1" aria-label="Remove one">&minus;</button>
@@ -635,12 +654,13 @@ function renderMain(){
     seen.forEach(h => {
       const bk = `${h.ci}.${h.bi}`;
       if (bk !== lastBrandKey){
-        html += `${lastBrandKey ? "</div>" : ""}<div class="brand-block"><div class="brand-head"><span class="brand-name">${esc(h.brand)}</span><span class="brand-meta">${esc(h.catLabel)}</span></div>`;
+        html += `${lastBrandKey ? "</div>" : ""}<div class="brand-block"><div class="brand-head"><span class="brand-name">${esc(h.brand)}</span>${topBrandBadgeHTML(h.ci, h.bi)}<span class="brand-meta">${esc(h.catLabel)}</span></div>`;
         lastBrandKey = bk;
       }
       const g = DATA[h.ci].b[h.bi].g[h.gi];
       html += `<div class="group open" data-key="${h.ci}.${h.bi}.${h.gi}" data-filtered="1">
         <button class="group-head" aria-expanded="true">
+          ${bestsellerStarHTML(groupHasTopItem(h.ci, h.bi, h.gi))}
           <span class="g-name">${esc(g.n)}</span>
           <span class="g-vcount">${g.v.length === 1 ? "1 option" : g.v.length + " options"}</span>
           <span class="g-price">${g._min === g._max ? fmt(g._min) : fmt(g._min) + "–" + fmt(g._max)}</span>
@@ -659,7 +679,7 @@ function renderMain(){
   c.b.forEach((b, bi) => {
     if (activeBrand && b.n !== activeBrand) return;
     const bs = b.g.reduce((x, g) => x + g.v.length, 0);
-    html += `<section class="brand-block"><div class="brand-head"><span class="brand-name">${esc(b.n)}</span><span class="brand-meta">${bs} products</span></div>`;
+    html += `<section class="brand-block"><div class="brand-head"><span class="brand-name">${esc(b.n)}</span>${topBrandBadgeHTML(ci, bi)}<span class="brand-meta">${bs} products</span></div>`;
     b.g.forEach((g, gi) => { html += groupHTML(c, ci, b, bi, g, gi, false); });
     html += `</section>`;
   });
