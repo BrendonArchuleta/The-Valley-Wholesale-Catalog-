@@ -90,6 +90,8 @@ main{max-width:1280px;margin:0 auto;padding:26px 20px 90px}
 .vrow:last-child{border-bottom:none}
 .vrow:nth-child(even){background:#FCFAF5}
 .v-name{flex:1;font-size:14px}
+/* Live stock badge lands in this slot (see /stock-badges.js); collapses to nothing when empty. */
+.v-name [data-stock-slot]:not(:empty){margin-left:8px}
 .v-price{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13.5px;width:74px;text-align:right}
 .stepper{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--white)}
 .stepper button{width:30px;height:30px;border:none;background:var(--sand);font-size:17px;font-weight:600;color:var(--pine);line-height:1}
@@ -696,8 +698,11 @@ function variantsHTML(ci, bi, gi, matchIds){
     const id = `${ci}.${bi}.${gi}.${vi}`;
     if (matchIds && !matchIds.has(id)) return "";
     const q = cart[id] || 0;
-    return `<div class="vrow" data-id="${id}">
-      <span class="v-name">${esc(v[0] || "Standard")}${TOP_ITEM_IDS.has(id) ? `<span class="badge-bestseller">Bestseller</span>` : ""}</span>
+    // data-item-id carries the inventory system's item number so the live stock
+    // layer (/stock-badges.js) can badge the row. Rows without one are skipped
+    // by the badge script and render exactly as before.
+    return `<div class="vrow" data-id="${id}"${v[2] ? ` data-item-id="${esc(String(v[2]))}"` : ""}>
+      <span class="v-name">${esc(v[0] || "Standard")}${TOP_ITEM_IDS.has(id) ? `<span class="badge-bestseller">Bestseller</span>` : ""}<span data-stock-slot></span></span>
       <span class="v-price">${fmt(v[1])}</span>
       <span class="stepper">
         <button data-d="-1" aria-label="Remove one">&minus;</button>
@@ -1274,5 +1279,6 @@ function syncOrderPadSemantics(){
 permanentOrderPad.addEventListener("change", syncOrderPadSemantics);
 syncOrderPadSemantics();
 </script>
+<script src="/stock-badges.js" defer></script>
 </body>
 </html>
