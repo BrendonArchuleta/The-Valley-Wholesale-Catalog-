@@ -1,6 +1,8 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { handleStockRequest, readStockRouteOptions } from "./inventory/route";
+import { createZohoSource } from "./inventory/zoho";
 
 interface Env {
   ASSETS: Fetcher;
@@ -12,6 +14,20 @@ interface Env {
       };
     };
   };
+
+  // Live inventory. The four ZOHO_* values are secrets set in the Site's
+  // settings; the rest are optional tuning. All absent in local dev unless a
+  // .dev.vars file supplies them, in which case /api/stock reports itself
+  // unavailable and the catalog simply renders no badges.
+  ZOHO_CLIENT_ID?: string;
+  ZOHO_CLIENT_SECRET?: string;
+  ZOHO_REFRESH_TOKEN?: string;
+  ZOHO_ORG_ID?: string;
+  ZOHO_DC?: string;
+  LOW_STOCK_THRESHOLD?: string;
+  STOCK_TTL_SECONDS?: string;
+  STOCK_SWR_SECONDS?: string;
+  STOCK_RETAIN_SECONDS?: string;
 }
 
 interface ExecutionContext {
@@ -54,6 +70,13 @@ const worker = {
         );
         return new Response(html, { status: assetResponse.status, headers });
       }
+    }
+
+    // Live stock for the catalog's variant badges. Swapping Zoho Inventory for
+    // the internal admin console is a change to this one line plus a new module
+    // implementing InventorySource — the route and its caching stay put.
+    if (url.pathname === "/api/stock") {
+      return handleStockRequest(request, ctx, createZohoSource(env), readStockRouteOptions(env));
     }
 
     if (url.pathname === "/_vinext/image") {
