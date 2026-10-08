@@ -74,6 +74,9 @@ main{max-width:1280px;margin:0 auto;padding:26px 20px 90px}
 .brand-meta{color:var(--muted);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
 .badge-top-brand{background:var(--pine);color:var(--cream);font-size:11px;font-weight:700;letter-spacing:.03em;border-radius:99px;padding:3px 9px;white-space:nowrap}
 .g-star{color:var(--brass);font-size:13px;flex:0 0 auto}
+.badge-new{display:inline-block;margin-left:7px;padding:1px 7px;border-radius:999px;background:var(--pine);color:var(--cream);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle}
+.cat-chip.new-chip{background:var(--pine);color:var(--cream);border-color:var(--pine)}
+.cat-chip.new-chip .ct{background:rgba(251,249,244,.22);color:var(--cream)}
 .badge-bestseller{display:inline-block;margin-left:8px;background:var(--brass);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border-radius:99px;padding:2px 7px;vertical-align:middle;white-space:nowrap}
 .group{background:var(--white);border:1px solid var(--line);border-radius:10px;margin-bottom:9px;overflow:hidden}
 .group-head{width:100%;display:flex;align-items:center;gap:14px;padding:13px 16px;background:none;border:none;text-align:left;font-size:15px}
@@ -610,6 +613,10 @@ const BY_ITEM_ID = Object.fromEntries(ITEMS.map(it => [it.itemId, it]));
 
 // ---------- top brands / top items (ranked on units sold, spread across brands) ----------
 const TOP_ITEM_IDS = new Set(["0.0.0.0","0.0.0.2","0.0.0.3","0.3.1.5","0.3.2.2","0.3.2.4","1.0.1.1","1.0.2.0","1.0.2.1","1.1.0.2","1.1.0.4","1.1.1.2","1.3.1.13","1.3.1.14","1.3.1.15","10.0.1.3","10.0.1.4","10.0.1.7","11.0.0.0","11.0.0.1","11.0.0.3","12.0.0.2","12.0.0.5","12.0.1.2","2.0.0.0","3.0.0.1","3.0.1.1","3.1.0.0","3.1.1.1","3.2.0.1","3.2.0.5","4.1.0.0","4.2.0.0","4.3.0.0","5.0.0.1","5.0.0.2","5.1.2.2","5.1.2.4","5.10.0.1","5.3.0.4","5.3.0.5","5.4.0.2","5.4.0.4","5.8.1.0","6.11.1.25","6.12.1.0","6.14.0.8","6.15.1.1","6.17.5.0","6.18.1.1","6.2.1.5","6.28.1.7","6.4.4.12","6.7.1.2","7.1.0.1","7.1.0.2","7.2.0.0","7.2.0.1","7.2.0.4","7.3.0.0","7.3.0.2","7.3.0.3","7.4.0.2","7.4.1.0","8.1.0.18","8.1.0.20","8.1.0.8","8.2.0.0","8.2.0.3","8.2.0.8","8.3.0.0","8.3.0.11","8.3.0.5","9.0.0.0","9.0.0.1","9.0.0.3","9.2.0.0","9.4.2.0","9.4.2.1","9.4.2.2","9.5.0.0","9.5.0.2"]);
+// ---------- items added in the last 30 days (as of the build) ----------
+const NEW_ITEM_IDS = new Set(["0.3.21.3","0.3.21.4","0.3.22.0","0.3.22.1","0.3.22.2","0.3.22.3","0.3.22.4","1.0.3.0","1.0.3.1","1.0.3.2","1.0.3.3","1.0.3.4","1.0.4.0","1.0.4.1","1.0.4.2","1.0.4.3","1.0.4.4","3.2.0.0","3.2.0.1","3.2.0.2","3.2.0.3","3.2.0.4","3.2.0.5","3.2.0.6","3.2.0.7","3.2.1.0","3.2.1.1","3.2.1.2","3.2.1.3","3.2.1.4","3.2.1.5","3.2.1.6","3.2.1.7","3.3.0.0","3.3.0.1","3.3.0.2","5.0.0.3","5.0.0.4","5.0.0.5","5.0.1.4","5.0.1.5","5.0.1.6","5.0.2.4","5.0.2.5","5.0.2.6","5.0.3.3","5.0.3.4","5.0.3.5","5.10.0.3","5.10.0.4","5.4.0.5","5.4.0.6","5.4.0.7","5.4.1.5","5.4.1.6","5.4.1.7","7.3.1.6","7.3.1.7","8.1.0.31","8.10.0.0","8.10.0.1","8.10.0.10","8.10.0.11","8.10.0.12","8.10.0.13","8.10.0.14","8.10.0.2","8.10.0.3","8.10.0.4","8.10.0.5","8.10.0.6","8.10.0.7","8.10.0.8","8.10.0.9","8.10.1.0","8.10.1.1","8.10.1.10","8.10.1.11","8.10.1.12","8.10.1.13","8.10.1.14","8.10.1.2","8.10.1.3","8.10.1.4","8.10.1.5","8.10.1.6","8.10.1.7","8.10.1.8","8.10.1.9","8.10.2.0","8.10.2.1","8.10.2.10","8.10.2.11","8.10.2.12","8.10.2.13","8.10.2.14","8.10.2.2","8.10.2.3","8.10.2.4","8.10.2.5","8.10.2.6","8.10.2.7","8.10.2.8","8.10.2.9","8.10.3.0","8.10.3.1","8.10.3.10","8.10.3.11","8.10.3.12","8.10.3.13","8.10.3.14","8.10.3.2","8.10.3.3","8.10.3.4","8.10.3.5","8.10.3.6","8.10.3.7","8.10.3.8","8.10.3.9","8.11.0.0","8.11.0.1","8.11.0.10","8.11.0.11","8.11.0.12","8.11.0.13","8.11.0.14","8.11.0.15","8.11.0.16","8.11.0.17","8.11.0.18","8.11.0.19","8.11.0.2","8.11.0.20","8.11.0.21","8.11.0.22","8.11.0.23","8.11.0.24","8.11.0.25","8.11.0.26","8.11.0.27","8.11.0.28","8.11.0.29","8.11.0.3","8.11.0.30","8.11.0.31","8.11.0.32","8.11.0.33","8.11.0.34","8.11.0.4","8.11.0.5","8.11.0.6","8.11.0.7","8.11.0.8","8.11.0.9","9.0.1.3","9.3.6.0","9.3.6.1","9.3.6.2","9.4.5.2","9.4.5.3","9.4.5.4","9.5.1.0","9.5.1.1","9.5.1.2","9.5.1.3","9.5.2.0","9.5.2.1","9.6.0.0"]);
+const NEW_SINCE = "Sep 8";
+
 const TOP_BRAND_RANK = {}; // "ci.bi" -> rank
 [[0,0,1],[0,3,2],[1,0,2],[1,3,1],[3,0,2],[3,1,1],[3,2,3],[4,1,1],[4,2,3],[4,3,2],[5,0,3],[5,1,1],[5,4,2],[6,4,2],[6,11,1],[6,28,3],[7,2,1],[7,3,2],[7,4,3],[8,1,2],[8,2,3],[8,3,1],[9,0,2],[9,4,1]].forEach(([ci, bi, rank]) => { TOP_BRAND_RANK[`${ci}.${bi}`] = rank; });
 function groupHasTopItem(ci, bi, gi){
@@ -623,9 +630,22 @@ function bestsellerStarHTML(hasTop){
   return hasTop ? `<span class="g-star" title="Includes a top-selling item">★</span>` : "";
 }
 
+// ---------- new items ----------
+// A view rather than a category: the items keep their place in DATA, so an
+// item listed here and under its own category is one catalog entry, and a
+// quantity set in either place is the same line on the order pad.
+const NEW_VIEW = -2;
+const NEW_ITEMS = ITEMS.filter(it => NEW_ITEM_IDS.has(it.id));
+function newItemsFor(brand){
+  return brand ? NEW_ITEMS.filter(it => it.brand === brand) : NEW_ITEMS;
+}
+function newBadgeHTML(id){
+  return NEW_ITEM_IDS.has(id) ? `<span class="badge-new">New</span>` : "";
+}
+
 // ---------- state ----------
 let cart = {};            // id -> qty
-let activeCat = 0;        // index into DATA, or -1 for search mode
+let activeCat = 0;        // index into DATA, NEW_VIEW for new items
 let activeBrand = "";     // brand filter within category
 let searchQ = "";
 
@@ -661,10 +681,13 @@ const esc = s => s.replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt
 // ---------- category chips ----------
 function renderChips(){
   const el = $("#catChips");
-  el.innerHTML = DATA.map((c, i) => {
-    const n = c.b.reduce((a, b) => a + b.g.reduce((x, g) => x + g.v.length, 0), 0);
-    return `<button class="cat-chip${i === activeCat && !searchQ ? " on" : ""}" data-ci="${i}" role="tab" aria-selected="${i === activeCat && !searchQ}"><span class="cat-label">${esc(c.l)}</span><span class="ct">${n}</span></button>`;
-  }).join("");
+  const chip = (label, count, ci, extra) => {
+    const on = ci === activeCat && !searchQ;
+    return `<button class="cat-chip${extra}${on ? " on" : ""}" data-ci="${ci}" role="tab" aria-selected="${on}"><span class="cat-label">${esc(label)}</span><span class="ct">${count}</span></button>`;
+  };
+  const chips = DATA.map((c, i) => chip(c.l, c.b.reduce((a, b) => a + b.g.reduce((x, g) => x + g.v.length, 0), 0), i, ""));
+  if (NEW_ITEMS.length) chips.unshift(chip("New Items", NEW_ITEMS.length, NEW_VIEW, " new-chip"));
+  el.innerHTML = chips.join("");
 }
 $("#catChips").addEventListener("click", e => {
   const b = e.target.closest(".cat-chip"); if (!b) return;
@@ -675,7 +698,9 @@ $("#catChips").addEventListener("click", e => {
 
 function renderBrandSel(){
   const sel = $("#brandSel");
-  const brands = searchQ ? [] : DATA[activeCat].b.map(b => b.n);
+  const brands = searchQ ? []
+    : activeCat === NEW_VIEW ? [...new Set(NEW_ITEMS.map(it => it.brand))]
+    : DATA[activeCat].b.map(b => b.n);
   sel.innerHTML = `<option value="">All brands (${brands.length})</option>` + brands.map(b => `<option${b === activeBrand ? " selected" : ""}>${esc(b)}</option>`).join("");
   sel.style.display = searchQ ? "none" : "";
 }
@@ -704,7 +729,7 @@ function variantsHTML(ci, bi, gi, matchIds){
     if (matchIds && !matchIds.has(id)) return "";
     const q = cart[id] || 0;
     return `<div class="vrow" data-id="${id}">
-      <span class="v-name">${esc(v[0] || "Standard")}${TOP_ITEM_IDS.has(id) ? `<span class="badge-bestseller">Bestseller</span>` : ""}</span>
+      <span class="v-name">${esc(v[0] || "Standard")}${newBadgeHTML(id)}${TOP_ITEM_IDS.has(id) ? `<span class="badge-bestseller">Bestseller</span>` : ""}</span>
       <span class="v-price">${fmt(v[1])}</span>
       <span class="stepper">
         <button data-d="-1" aria-label="Remove one">&minus;</button>
@@ -714,6 +739,42 @@ function variantsHTML(ci, bi, gi, matchIds){
       <span class="v-line">${q ? fmt(q * v[1]) : ""}</span>
     </div>`;
   }).join("");
+}
+
+function newItemsHTML(){
+  const items = newItemsFor(activeBrand);
+  const matchIds = new Set(items.map(it => it.id));
+  let html = `<h1 class="cat-title">New Items</h1><p class="cat-sub">${items.length} product${items.length === 1 ? "" : "s"} added since ${esc(NEW_SINCE)}</p>`;
+  if (!items.length){
+    return html + `<div class="empty"><b>Nothing new from this brand.</b>Pick another brand, or browse the full catalog.</div>`;
+  }
+  // one block per brand, its new groups inside, newest brands as DATA orders them
+  const groups = new Map();
+  items.forEach(it => {
+    const bk = `${it.ci}.${it.bi}`;
+    if (!groups.has(bk)) groups.set(bk, { brand: it.brand, catLabel: it.catLabel, ci: it.ci, bi: it.bi, keys: new Set() });
+    groups.get(bk).keys.add(`${it.ci}.${it.bi}.${it.gi}`);
+  });
+  groups.forEach(blk => {
+    html += `<section class="brand-block"><div class="brand-head"><span class="brand-name">${esc(blk.brand)}</span>${topBrandBadgeHTML(blk.ci, blk.bi)}<span class="brand-meta">${esc(blk.catLabel)}</span></div>`;
+    blk.keys.forEach(key => {
+      const [ci, bi, gi] = key.split(".").map(Number);
+      const g = DATA[ci].b[bi].g[gi];
+      const shown = g.v.filter((v, vi) => matchIds.has(`${ci}.${bi}.${gi}.${vi}`)).length;
+      html += `<div class="group open" data-key="${key}" data-filtered="1">
+        <button class="group-head" aria-expanded="true">
+          ${bestsellerStarHTML(groupHasTopItem(ci, bi, gi))}
+          <span class="g-name">${esc(g.n)}</span>
+          <span class="g-vcount">${shown === 1 ? "1 option" : shown + " options"}</span>
+          <span class="g-price">${g._min === g._max ? fmt(g._min) : fmt(g._min) + "–" + fmt(g._max)}</span>
+          <svg class="g-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="variants">${variantsHTML(ci, bi, gi, matchIds)}</div>
+      </div>`;
+    });
+    html += `</section>`;
+  });
+  return html;
 }
 
 function renderMain(){
@@ -754,6 +815,10 @@ function renderMain(){
     });
     html += "</div>";
     m.innerHTML = html;
+    return;
+  }
+  if (activeCat === NEW_VIEW){
+    m.innerHTML = newItemsHTML();
     return;
   }
   const ci = activeCat, c = DATA[ci];
