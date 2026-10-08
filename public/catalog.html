@@ -452,7 +452,7 @@ footer a:hover{color:var(--brass)}
       Download my order
     </button>
     <button class="btn btn-ghost btn-danger" id="btnClear">Empty order pad</button>
-    <p class="hint">Your order downloads as two files — a PDF to read and a CSV your rep can import. Emailing walks you through attaching both before your email opens.</p>
+    <p class="hint">Your order downloads as one zip holding a PDF to read and a CSV your rep can import. Emailing walks you through attaching it before your email opens.</p>
   </div>
 </aside>
 <div class="confirm-wrap" id="confirmWrap" role="alertdialog" aria-modal="true" aria-label="Empty order pad">
@@ -474,7 +474,7 @@ footer a:hover{color:var(--brass)}
 
     <section class="ew-step" id="ewStep1">
       <h2 class="ew-title" tabindex="-1">Step 1: Download My Order</h2>
-      <p>First, download your completed order. It saves two files — a PDF of the order and a CSV your rep imports straight into our system. You will attach both to your email in the next step.</p>
+      <p>First, download your completed order. It saves one zip file holding a PDF of the order and a CSV your rep imports straight into our system. You will attach that one file to your email in the next step.</p>
       <button class="btn btn-primary" id="ewDownload">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M14 3v6h6"/></svg>
         Download my order
@@ -483,13 +483,13 @@ footer a:hover{color:var(--brass)}
     </section>
 
     <section class="ew-step" id="ewStep2" hidden>
-      <h2 class="ew-title" tabindex="-1">Step 2: Attach Both Downloaded Files</h2>
-      <p class="ew-warning"><strong>IMPORTANT: Files are not attached automatically. You must manually attach both files you downloaded in Step 1 — the PDF and the CSV — before sending your email.</strong></p>
+      <h2 class="ew-title" tabindex="-1">Step 2: Attach the Downloaded File</h2>
+      <p class="ew-warning"><strong>IMPORTANT: Your order is not attached automatically. You must manually attach the zip file you downloaded in Step 1 before sending your email.</strong></p>
       <ol class="ew-instructions">
         <li>Select &ldquo;Open Email.&rdquo;</li>
         <li>Your email application will open with the order email information filled in where supported.</li>
-        <li>Locate both order files in your Downloads folder.</li>
-        <li><strong>Attach both downloaded files</strong> to the email.</li>
+        <li>Locate the order zip file in your Downloads folder.</li>
+        <li><strong>Attach the downloaded zip file</strong> to the email.</li>
         <li>Review the email and send it.</li>
       </ol>
       <p class="ew-recipient">Sending to <span id="ewRepShow"></span></p>
@@ -506,8 +506,8 @@ footer a:hover{color:var(--brass)}
 
     <section class="ew-step" id="ewStep3" hidden>
       <h2 class="ew-title" tabindex="-1">Step 3: Final Reminder</h2>
-      <p class="ew-warning"><strong>Before sending, confirm that both order files are attached to the email.</strong> Orders may be delayed if they are not included.</p>
-      <label class="cc-check"><input type="checkbox" id="ewAck"> I understand that I must manually attach both downloaded files.</label>
+      <p class="ew-warning"><strong>Before sending, confirm that the order file is attached to the email.</strong> Orders may be delayed if it is not included.</p>
+      <label class="cc-check"><input type="checkbox" id="ewAck"> I understand that I must manually attach the downloaded order file.</label>
     </section>
 
     <div class="confirm-btns ew-nav">
@@ -1025,21 +1025,82 @@ function buildCsv(m, now = new Date()){
 function orderFileStem(m){
   return "valley-order-" + m.store.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-" + new Date().toISOString().slice(0, 10);
 }
-function saveCsv(m){
-  const blob = new Blob([buildCsv(m)], { type: "text/csv;charset=utf-8" });
+// ---------- zip (store only, no compression) ----------
+// Browsers allow a page one download per click: a second is silently blocked.
+// Both files therefore travel as one zip, written here so no library is needed.
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++){
+    let c = i;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+    t[i] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(bytes){
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function zipStore(entries, now = new Date()){
+  const enc = new TextEncoder();
+  const time = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  const date = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  const locals = [], centrals = [];
+  let offset = 0;
+  entries.forEach(e => {
+    const name = enc.encode(e.name), crc = crc32(e.data), size = e.data.length;
+    const local = new Uint8Array(30 + name.length + size);
+    const lv = new DataView(local.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0, true);
+    lv.setUint16(8, 0, true); lv.setUint16(10, time, true); lv.setUint16(12, date, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, size, true); lv.setUint32(22, size, true);
+    lv.setUint16(26, name.length, true); lv.setUint16(28, 0, true);
+    local.set(name, 30); local.set(e.data, 30 + name.length);
+    locals.push(local);
+
+    const central = new Uint8Array(46 + name.length);
+    const cv = new DataView(central.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0, true); cv.setUint16(10, 0, true); cv.setUint16(12, time, true);
+    cv.setUint16(14, date, true); cv.setUint32(16, crc, true); cv.setUint32(20, size, true);
+    cv.setUint32(24, size, true); cv.setUint16(28, name.length, true);
+    cv.setUint32(42, offset, true);
+    central.set(name, 46);
+    centrals.push(central);
+    offset += local.length;
+  });
+  const centralSize = centrals.reduce((a, c) => a + c.length, 0);
+  const end = new Uint8Array(22);
+  const ev = new DataView(end.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, entries.length, true); ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, centralSize, true); ev.setUint32(16, offset, true);
+  return new Blob([...locals, ...centrals, end], { type: "application/zip" });
+}
+function saveBlob(blob, filename){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = orderFileStem(m) + ".csv";
+  a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// Both files go to the rep: the PDF to read, the CSV to import. The CSV is
-// built here, so it still downloads when the PDF library cannot be reached.
+// Both files go to the rep: the PDF to read, the CSV to import. They download
+// together as one zip; if the PDF library cannot be reached the CSV goes on its
+// own and the caller tells the customer so.
 async function downloadOrderFiles(m){
-  saveCsv(m);
-  const doc = await buildPdf(m);
-  doc.save(orderFileStem(m) + ".pdf");
+  const stem = orderFileStem(m);
+  const csv = new TextEncoder().encode(buildCsv(m));
+  let doc;
+  try {
+    doc = await buildPdf(m);
+  } catch(e) {
+    saveBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), stem + ".csv");
+    throw e;
+  }
+  const pdf = new Uint8Array(doc.output("arraybuffer"));
+  saveBlob(zipStore([{ name: stem + ".pdf", data: pdf }, { name: stem + ".csv", data: csv }]), stem + ".zip");
 }
 
 let pdfLibs = null;
@@ -1142,9 +1203,9 @@ $("#btnPdf").addEventListener("click", async () => {
   const btn = $("#btnPdf"); btn.disabled = true;
   try {
     await downloadOrderFiles(m);
-    toast("Order downloaded (PDF + CSV) — attach both to your email.");
+    toast("Order downloaded — one zip holding your PDF and CSV. Attach it to your email.");
   } catch(e) {
-    toast("Order CSV downloaded. The PDF needs an internet connection — try again for it.");
+    toast("Order CSV downloaded on its own — the PDF needs an internet connection. Try again for both.");
   }
   btn.disabled = false;
 });
@@ -1189,7 +1250,7 @@ $("#opPdf").addEventListener("click", () => { closeOrderPreview(); $("#btnPdf").
 
 function emailBody(m){
   return `Hi ${m.rep.name},\n\n`
-    + `My order from The Valley Wholesale catalog is attached — a PDF of the order and a CSV you can import.\n\n`
+    + `My order from The Valley Wholesale catalog is attached as a zip — a PDF of the order and a CSV you can import.\n\n`
     + `Store: ${m.store}\n`
     + `Contact: ${m.name}${m.phone ? " · " + m.phone : ""}\n`
     + (m.notes ? `Notes: ${m.notes}\n` : "")
@@ -1251,12 +1312,12 @@ $("#ewDownload").addEventListener("click", async () => {
   try {
     await downloadOrderFiles(ewOrder);
     ewDownloaded = true;
-    $("#ewDownloadStatus").textContent = "Both files downloaded (PDF + CSV) — you can continue to Step 2.";
+    $("#ewDownloadStatus").textContent = "Downloaded — one zip holding your order PDF and CSV. You can continue to Step 2.";
     $("#ewNext").disabled = false;
   } catch(e) {
     ewDownloaded = true;
     $("#ewNext").disabled = false;
-    $("#ewDownloadStatus").textContent = "The order CSV downloaded, but the PDF needs an internet connection. Try again for the PDF, or continue and send the CSV.";
+    $("#ewDownloadStatus").textContent = "Only the CSV downloaded — building the PDF needs an internet connection. Try again for both, or continue and send the CSV on its own.";
   }
   ewBuilding = false;
   btn.disabled = false;
@@ -1275,7 +1336,7 @@ function ewOpenEmail(method){
     const tab = window.open(href, "_blank");
     if (!tab){
       $("#ewFallback").hidden = false;
-      $("#ewFallback").innerHTML = `Your browser blocked the popup. Create a new email manually to <a href="mailto:${esc(ewOrder.rep.email)}">${esc(ewOrder.rep.email)}</a> and attach both files you downloaded in Step 1.`;
+      $("#ewFallback").innerHTML = `Your browser blocked the popup. Create a new email manually to <a href="mailto:${esc(ewOrder.rep.email)}">${esc(ewOrder.rep.email)}</a> and attach the file you downloaded in Step 1.`;
       return;
     }
   } else {
