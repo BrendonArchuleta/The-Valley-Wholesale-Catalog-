@@ -1,11 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build",
+  "framework": null,
+  "installCommand": "echo 'Static catalog: no install needed'",
+  "buildCommand": "echo 'Static catalog: no build needed'",
   "outputDirectory": "public",
   "rewrites": [
-    {
-      "source": "/",
-      "destination": "/catalog.html"
-    }
+    { "source": "/", "destination": "/catalog.html" }
   ]
 }
